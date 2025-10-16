@@ -132,7 +132,6 @@ int	builtin_unset(char **argv, char ***envp)
 	int		k;
 	int		count;
 	char	**new_env;
-	int		len;
 
 	count = 0;
 	while ((*envp)[count])
@@ -143,7 +142,6 @@ int	builtin_unset(char **argv, char ***envp)
 	while ((*envp)[++i])
 	{
 		j = 1;
-		len = 0;
 		while (argv[j] && ft_strncmp((*envp)[i], argv[j], ft_strlen(argv[j])) != 0)
 			j++;
 		if (!argv[j])
