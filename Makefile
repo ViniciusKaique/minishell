@@ -14,9 +14,12 @@ LIBFT_DIR   = libft
 
 # --- Arquivos Fonte (.c) ---
 # Lista todos os arquivos .c que compõem o projeto.
-SRC_FILES   = main.c \
+SRC_FILES   = main.c 			\
 			  command_utils.c	\
-			  redirect_utils.c
+			  redirect_utils.c	\
+			  envp_utils.c		\
+			  token_utils.c     \
+			  free_utils.c
 
 # Adiciona o prefixo de diretório (src/) aos arquivos, exceto para main.c
 SRCS        = $(addprefix $(SRC_DIR)/, $(filter-out main.c, $(SRC_FILES))) main.c

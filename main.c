@@ -14,8 +14,8 @@
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_command	*cmd1;
-	t_command	*cmd2;
+	//t_command	*cmd1;
+	//t_command	*cmd2;
 
 	// char	*input;
 	(void)argc;
@@ -46,11 +46,5 @@ int	main(int argc, char **argv, char **envp)
 	// free(r);
 
 	
-	cmd1 = new_command();
-	cmd2 = new_command();
-	cmd1->args = (char *[]){"ls", "-la", NULL};
-	cmd2->args = (char *[]){"grep", ".c", NULL};
-	add_command_back(&cmd1, cmd2);
-	printf("Primeiro comando: %s\n", cmd1->args[0]);
-	printf("Próximo comando: %s\n", cmd1->next->args[0]);
 }
+
