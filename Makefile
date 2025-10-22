@@ -5,7 +5,7 @@
 # --- Variáveis do Projeto ---
 NAME        = minishell
 CC          = cc
-CFLAGS      = -Wall -Wextra -Werror -g # Flags de compilação padrão [cite: 236]
+CFLAGS      = -Wall -Wextra -Werror
 
 # --- Diretórios ---
 INC_DIR     = include
@@ -15,14 +15,12 @@ LIBFT_DIR   = libft
 # --- Arquivos Fonte (.c) ---
 # Lista todos os arquivos .c que compõem o projeto.
 SRC_FILES   = main.c \
-              parser.c \
-              executor.c \
-              builtins.c \
-              env_manage.c
+			  command_utils.c	\
+			  redirect_utils.c
 
 # Adiciona o prefixo de diretório (src/) aos arquivos, exceto para main.c
 SRCS        = $(addprefix $(SRC_DIR)/, $(filter-out main.c, $(SRC_FILES))) main.c
-
+	
 # --- Arquivos Objeto (.o) ---
 # Gera a lista de arquivos .o a partir da lista de .c
 OBJS        = $(SRCS:.c=.o)
@@ -76,8 +74,5 @@ fclean: clean
 # Regra para recompilar tudo do zero.
 re: fclean all
 
-# Regra de bônus (atualmente vazia, mas exigida pelo enunciado) [cite: 239]
-bonus: all
-
 # Indica que estas regras não correspondem a nomes de arquivos.
-.PHONY: all clean fclean re bonus
+.PHONY: all clean fclean re
