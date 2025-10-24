@@ -3,8 +3,11 @@
 
 # include <stdio.h>
 # include <stdlib.h>
+#include <../libft/libft.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 /*─────────────────────────────*/
 /*         ENUMS               */
@@ -87,5 +90,19 @@ void	free_redirects(t_redirect *redir);
 void	free_commands(t_command *cmd);
 void	free_tokens(t_token *tok);
 void	free_env(t_env *env);
+void	free_split(char **split);
+
+//path
+char *build_path(char *dir, char *cmd);
+char *find_command_path(char *cmd);
+
+//execute
+void	exec(char **args, char **envp);
+
+//lexer
+t_token	*tokenize(char *line);
+int	read_symbol(char *s, int i, t_token **lst);
+int	read_word(char *s, int i, t_token **lst);
+void add_token(t_token **lst, t_token_type type, char *value);
 
 #endif

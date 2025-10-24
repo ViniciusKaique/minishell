@@ -6,7 +6,7 @@
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 13:09:25 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/16 10:40:05 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/10/23 15:27:49 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ int		ft_isascii(int c);
 int		ft_isprint(int c);
 int		ft_tolower(int c);
 int		ft_toupper(int c);
-
+int     ft_isspace(int c);
+ 
 void	ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t count, size_t size);
 void	*ft_memset(void *b, int c, size_t len);

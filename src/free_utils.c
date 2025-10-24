@@ -1,5 +1,5 @@
 #include "minishell.h"
-#include <stdlib.h>
+
 
 void	free_redirects(t_redirect *redir)
 {
@@ -48,15 +48,28 @@ void	free_commands(t_command *cmd)
 	while (cmd)
 	{
 		tmp = cmd->next;
-		// if (cmd->args)
-		// {
-		// 	int i = 0;
-		// 	while (cmd->args[i])
-		// 		free(cmd->args[i++]);
-		// 	free(cmd->args);
-		// }
+		if (cmd->args)
+		{
+			int i = 0;
+			while (cmd->args[i])
+				free(cmd->args[i++]);
+			free(cmd->args);
+		}
 		free_redirects(cmd->redirects);
 		free(cmd);
 		cmd = tmp;
 	}
 }
+
+void	free_split(char **split)
+{
+	int	i;
+
+	if (!split)
+		return ;
+	i = 0;
+	while (split[i])
+		free(split[i++]);
+	free(split);
+}
+

@@ -6,7 +6,7 @@
 #    By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/21 13:36:18 by vinpache          #+#    #+#              #
-#    Updated: 2025/10/16 10:40:30 by vinpache         ###   ########.fr        #
+#    Updated: 2025/10/23 15:28:11 by vinpache         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,7 +51,8 @@ SRC	=	ft_atoi.c		\
 		ft_toupper.c	\
 		ft_strcmp.c     \
 		ft_free_matrix.c\
-		ft_strjoin_free.c
+		ft_strjoin_free.c\
+		ft_isspace.c
 
 OBJS = $(SRC:.c=.o)
 
