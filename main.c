@@ -1,61 +1,18 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* main.c                                             :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/10/22 16:36:21 by vinpache          #+#    #+#             */
-/* Updated: 2025/10/26 16:25:00 by vinpache         ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/27 19:02:00 by vinpache          #+#    #+#             */
+/*   Updated: 2025/10/27 18:16:17 by vinpache         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/**
- * @brief Função auxiliar para imprimir a estrutura de comandos (para teste).
- */
-static void	print_commands(t_command *cmd)
-{
-	int			i;
-	t_redirect	*redir;
-
-	printf("--- Estrutura de Comandos Gerada ---\n");
-	while (cmd)
-	{
-		i = 0;
-		if (cmd->args)
-		{
-			printf("  Args: ");
-			while (cmd->args[i])
-			{
-				printf("'%s' ", cmd->args[i]);
-				i++;
-			}
-			printf("\n");
-		}
-		else
-			printf("  Args: (null)\n");
-		redir = cmd->redirects;
-		printf("  Redirects: ");
-		if (!redir)
-			printf("(null)");
-		while (redir)
-		{
-			printf("[type: %d, file: '%s'] ", redir->type, redir->file);
-			redir = redir->next;
-		}
-		printf("\n------------------------------------\n");
-		if (cmd->next)
-			printf("                | (PIPE)\n");
-		cmd = cmd->next;
-	}
-}
-
-/**
- * @brief Loop principal do prompt do Minishell.
- */
-static void	prompt_loop(void)
+static void	prompt_loop(t_env **env)
 {
 	char		*input;
 	t_token		*tokens;
@@ -76,8 +33,7 @@ static void	prompt_loop(void)
 			commands = parse(tokens);
 			if (commands)
 			{
-				print_commands(commands);
-				// AQUI ENTRARÁ O SEU EXECUTOR
+				execute_commands(commands, env);
 				free_commands(commands);
 			}
 			free_tokens(tokens);
@@ -88,11 +44,17 @@ static void	prompt_loop(void)
 
 int	main(int argc, char **argv, char **envp)
 {
+	t_env	*env;
+
 	(void)argc;
 	(void)argv;
-	(void)envp;
-
-	// Futuramente: inicializar sinais e envp aqui
-	prompt_loop();
+	env = init_env(envp);
+	if (!env)
+	{
+		ft_putendl_fd("Erro ao inicializar ambiente.", 2);
+		return (1);
+	}
+	prompt_loop(&env);
+	free_env(env);
 	return (0);
 }

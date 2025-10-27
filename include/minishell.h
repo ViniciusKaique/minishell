@@ -102,8 +102,11 @@ void		add_command_back(t_command **list, t_command *new);
 /* envp_utils.c */
 t_env		*new_env(char *name, char *value);
 void		add_env_back(t_env **list, t_env *new);
+char	**env_to_array(t_env *env);
 
-/* execute.c */
+/* --- Funções de inicialização e execução --- */
+t_env   *init_env(char **envp);
+void    execute_commands(t_command *cmds, t_env **env);
 void		exec(char **args, char **envp);
 
 /* free_utils.c */
@@ -129,5 +132,20 @@ void		add_redirect_back(t_redirect **list, t_redirect *new);
 /* token_utils.c */
 t_token		*new_token(t_token_type type, char *value);
 void		add_token_back(t_token **list, t_token *new);
+
+// --- builtins ---
+int	builtin_echo(char **args);
+int	builtin_cd(char **args, t_env **env);
+int	builtin_pwd(void);
+int	builtin_export(char **args, t_env **env);
+int	builtin_unset(char **args, t_env **env);
+int	builtin_env(t_env *env);
+int	builtin_exit(char **args);
+int	is_builtin(char *cmd);
+int	exec_builtin(char **args, t_env **env);
+int	is_valid_name(const char *s);
+t_env	*find_env(t_env *env, const char *name);
+int	set_env_kv(t_env **env, const char *name, const char *value);
+
 
 #endif

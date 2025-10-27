@@ -6,7 +6,7 @@
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 14:07:47 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/23 14:07:49 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/10/27 18:08:01 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,28 @@ void	add_env_back(t_env **list, t_env *new)
 	while (tmp->next)
 		tmp = tmp->next;
 	tmp->next = new;
+}
+
+t_env	*init_env(char **envp)
+{
+	t_env	*env_list;
+	int		i;
+	char	*eq;
+	char	*name;
+	char	*value;
+
+	env_list = NULL;
+	i = 0;
+	while (envp[i])
+	{
+		eq = ft_strchr(envp[i], '=');
+		if (eq)
+		{
+			name = ft_substr(envp[i], 0, eq - envp[i]);
+			value = ft_strdup(eq + 1);
+			add_env_back(&env_list, new_env(name, value));
+		}
+		i++;
+	}
+	return (env_list);
 }

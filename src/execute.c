@@ -1,46 +1,96 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   execute.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/23 14:06:32 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/23 14:14:23 by vinpache         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
-void	exec(char **args, char **envp)
+/**
+ * @brief Executa um comando simples (sem pipe/redirecionamento).
+ * 
+ * Se for builtin, executa direto no processo atual.
+ * Se for comando externo, faz fork + execve().
+ */
+void	execute_commands(t_command *cmds, t_env **env)
 {
-	pid_t pid;
-	int status;
-	char *path;
+	t_command	*cmd;
+	pid_t		pid;
+	char		*path;
+	char		**envp;
+	int			status;
 
-	path = find_command_path(args[0]); // busca executável (ex: /bin/ls)
-	if (!path)
+	cmd = cmds;
+	while (cmd)
 	{
-		printf("Comando não encontrado: %s\n", args[0]);
-		return ;
-	}
+		if (!cmd->args || !cmd->args[0])
+		{
+			cmd = cmd->next;
+			continue;
+		}
 
-	pid = fork(); // cria o processo filho
-	if (pid == 0)
-	{
-		// código do filho
-		execve(path, args, envp); // substitui o processo
-		perror("execve"); // se falhar, mostra erro
-		exit(127); // código de erro padrão de comando inexistente
-	}
-	else if (pid > 0)
-	{
-		// código do pai
-		waitpid(pid, &status, 0); // espera o filho terminar
-		printf("Comando terminou com status: %d\n", WEXITSTATUS(status));
-	}
-	else
-		perror("fork");
+		// --- executa builtin direto ---
+		if (is_builtin(cmd->args[0]))
+		{
+			exec_builtin(cmd->args, env);
+			cmd = cmd->next;
+			continue;
+		}
 
-	free(path);
+		// --- comando externo ---
+		path = find_command_path(cmd->args[0]);
+		if (!path)
+		{
+			ft_putstr_fd("minishell: command not found: ", 2);
+			ft_putendl_fd(cmd->args[0], 2);
+			cmd = cmd->next;
+			continue;
+		}
+
+		pid = fork();
+		if (pid == 0)
+		{
+			envp = env_to_array(*env); // converte t_env para char**
+			execve(path, cmd->args, envp);
+			perror("execve");
+			exit(127);
+		}
+		else if (pid > 0)
+			waitpid(pid, &status, 0);
+		else
+			perror("fork");
+
+		free(path);
+		cmd = cmd->next;
+	}
+}
+
+/**
+ * @brief Converte a lista t_env em um array "NAME=VALUE" para o execve().
+ */
+char	**env_to_array(t_env *env)
+{
+	int		count;
+	t_env	*tmp;
+	char	**array;
+	char	*joined;
+	int		i;
+
+	count = 0;
+	tmp = env;
+	while (tmp)
+	{
+		count++;
+		tmp = tmp->next;
+	}
+	array = ft_calloc(count + 1, sizeof(char *));
+	if (!array)
+		return (NULL);
+	i = 0;
+	while (env)
+	{
+		if (env->value)
+		{
+			joined = ft_strjoin(env->name, "=");
+			array[i] = ft_strjoin_free(joined, env->value);
+			i++;
+		}
+		env = env->next;
+	}
+	array[i] = NULL;
+	return (array);
 }
