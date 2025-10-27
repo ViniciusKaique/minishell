@@ -22,7 +22,8 @@ SRC_FILES   = main.c 			\
 			  free_utils.c		\
 			  path_utils.c		\
 			  execute.c			\
-			  lexer.c
+			  lexer.c			\
+			  parser.c
 
 # Adiciona o prefixo de diretório (src/) aos arquivos, exceto para main.c
 SRCS        = $(addprefix $(SRC_DIR)/, $(filter-out main.c, $(SRC_FILES))) main.c
