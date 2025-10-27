@@ -1,47 +1,52 @@
 # **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/10/27 17:59:13 by vinpache          #+#    #+#              #
-#    Updated: 2025/10/27 18:10:31 by vinpache         ###   ########.fr        #
-#                                                                              #
+#                                   MAKEFILE                                   #
 # **************************************************************************** #
 
+# --- Configuração ---
 NAME        = minishell
 CC          = cc
 CFLAGS      = -Wall -Wextra -Werror
 
+# --- Diretórios ---
 INC_DIR     = include
 SRC_DIR     = src
-BUILTINS_DIR= $(SRC_DIR)/builtins
 LIBFT_DIR   = libft
 
-SRC_FILES =  main.c 					\
-			 command_utils.c 			\
-			 redirect_utils.c 			\
-			 envp_utils.c 				\
-			 token_utils.c 				\
-			 free_utils.c 				\
-			 path_utils.c 				\
-			 execute.c 					\
-			 lexer.c 					\
-			 parser.c 					\
-			 builtins/builtin_utils.c 	\
-			 builtins/cd.c 				\
-			 builtins/echo.c 			\
-			 builtins/env.c 			\
-			 builtins/exit.c 			\
-			 builtins/export.c 			\
-			 builtins/pwd.c 			\
-			 builtins/unset.c
+# --- Pastas do projeto ---
+SRC_DIRS = \
+	validation \
+	tokenization \
+	parsing \
+	execution \
+	builtins \
+	signals \
+	expansion
 
-SRCS        = $(addprefix $(SRC_DIR)/, $(filter-out main.c, $(SRC_FILES))) main.c
+# --- Arquivos Fonte ---
+SRC_FILES =  main.c \
+	tokenization/lexer.c \
+	tokenization/token_utils.c \
+	tokenization/redirect_utils.c \
+	parsing/parser.c \
+	parsing/command_utils.c \
+	execution/execute.c \
+	execution/envp_utils.c \
+	execution/path_utils.c \
+	execution/free_utils.c \
+	builtins/builtin_utils.c \
+	builtins/cd.c \
+	builtins/echo.c \
+	builtins/env.c \
+	builtins/exit.c \
+	builtins/export.c \
+	builtins/pwd.c \
+	builtins/unset.c
 
+# --- Geração dos caminhos completos ---
+SRCS = $(addprefix $(SRC_DIR)/, $(filter-out main.c, $(SRC_FILES))) ./main.c
 OBJS = $(SRCS:.c=.o)
 
+# --- Libs ---
 LIBFT = $(LIBFT_DIR)/libft.a
 LIBS  = -lreadline -lncurses
 
