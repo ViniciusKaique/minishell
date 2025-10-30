@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/27 18:02:40 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/27 18:02:40 by vinpache         ###   ########.fr       */
+/*   Created: 2025/10/30 17:51:11 by vinpache          #+#    #+#             */
+/*   Updated: 2025/10/30 17:51:47 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,39 +30,55 @@ static void	print_export_list(t_env *env)
 	}
 }
 
+static void	print_export_error(char *arg)
+{
+	ft_putstr_fd("minishell: export: `", 2);
+	ft_putstr_fd(arg, 2);
+	ft_putendl_fd("': not a valid identifier", 2);
+}
+
+static int	process_export_arg(char *arg, t_env **env)
+{
+	char	*eq;
+
+	eq = ft_strchr(arg, '=');
+	if (eq)
+	{
+		*eq = '\0';
+		if (is_valid_name(arg))
+			set_env_kv(env, arg, eq + 1);
+		else
+		{
+			print_export_error(arg);
+			*eq = '=';
+			return (1);
+		}
+		*eq = '=';
+	}
+	else if (!is_valid_name(arg))
+	{
+		print_export_error(arg);
+		return (1);
+	}
+	else
+		set_env_kv(env, arg, NULL);
+	return (0);
+}
+
 int	builtin_export(char **args, t_env **env)
 {
-	int		i;
-	char	*eq;
+	int	i;
+	int	exit_status;
 
 	if (!args[1])
 		return (print_export_list(*env), 0);
 	i = 1;
+	exit_status = 0;
 	while (args[i])
 	{
-		eq = ft_strchr(args[i], '=');
-		if (eq)
-		{
-			*eq = '\0';
-			if (is_valid_name(args[i]))
-				set_env_kv(env, args[i], eq + 1);
-			else
-			{
-				ft_putstr_fd("minishell: export: `", 2);
-				ft_putstr_fd(args[i], 2);
-				ft_putendl_fd("': not a valid identifier", 2);
-			}
-			*eq = '=';
-		}
-		else if (is_valid_name(args[i]))
-			set_env_kv(env, args[i], NULL);
-		else
-		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(args[i], 2);
-			ft_putendl_fd("': not a valid identifier", 2);
-		}
+		if (process_export_arg(args[i], env) != 0)
+			exit_status = 1;
 		i++;
 	}
-	return (0);
+	return (exit_status);
 }

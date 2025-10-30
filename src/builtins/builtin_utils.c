@@ -6,7 +6,7 @@
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 17:31:05 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/27 18:12:04 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/10/30 14:18:55 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,45 +58,4 @@ int	is_valid_name(const char *s)
 		i++;
 	}
 	return (1);
-}
-
-t_env	*find_env(t_env *env, const char *name)
-{
-	while (env)
-	{
-		if (ft_strcmp(env->name, name) == 0)
-			return (env);
-		env = env->next;
-	}
-	return (NULL);
-}
-
-int	set_env_kv(t_env **env, const char *name, const char *value)
-{
-	t_env	*node;
-	char	*n_dup;
-	char	*v_dup;
-
-	node = find_env(*env, name);
-	if (node)
-	{
-		if (value)
-			v_dup = ft_strdup(value);
-		else
-			v_dup = NULL;
-		if (value && v_dup == NULL)
-			return (1);
-		if (node->value)
-			free(node->value);
-		node->value = v_dup;
-		return (0);
-	}
-	n_dup = ft_strdup(name);
-	if (!n_dup)
-		return (1);
-	v_dup = value ? ft_strdup(value) : NULL;
-	if (value && v_dup == NULL)
-		return (free(n_dup), 1);
-	add_env_back(env, new_env(n_dup, v_dup));
-	return (0);
 }

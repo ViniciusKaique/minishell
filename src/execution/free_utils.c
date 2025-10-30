@@ -1,5 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_utils.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/30 13:50:34 by vinpache          #+#    #+#             */
+/*   Updated: 2025/10/30 13:59:37 by vinpache         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "minishell.h"
 
 void	free_redirects(t_redirect *redir)
 {
@@ -44,13 +55,14 @@ void	free_env(t_env *env)
 void	free_commands(t_command *cmd)
 {
 	t_command	*tmp;
+	int			i;
 
 	while (cmd)
 	{
 		tmp = cmd->next;
 		if (cmd->args)
 		{
-			int i = 0;
+			i = 0;
 			while (cmd->args[i])
 				free(cmd->args[i++]);
 			free(cmd->args);
@@ -72,4 +84,3 @@ void	free_split(char **split)
 		free(split[i++]);
 	free(split);
 }
-

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/29 19:21:41 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/29 19:22:00 by vinpache         ###   ########.fr       */
+/*   Created: 2025/10/30 18:41:45 by vinpache          #+#    #+#             */
+/*   Updated: 2025/10/30 18:42:52 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,20 @@ int	apply_redirects(t_redirect *redir)
 		redir = redir->next;
 	}
 	return (status);
+}
+
+void	expand_redirects(t_command *cmd, t_env *env)
+{
+	t_redirect	*redir_ptr;
+
+	redir_ptr = cmd->redirects;
+	while (redir_ptr)
+	{
+		if (redir_ptr->type != R_HEREDOC)
+		{
+			redir_ptr->file = expand_and_remove_quotes(redir_ptr->file,
+					env);
+		}
+		redir_ptr = redir_ptr->next;
+	}
 }

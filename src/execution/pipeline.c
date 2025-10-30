@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/29 19:12:10 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/29 19:12:11 by vinpache         ###   ########.fr       */
+/*   Created: 2025/10/30 19:47:14 by vinpache          #+#    #+#             */
+/*   Updated: 2025/10/30 20:39:52 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,26 +28,6 @@ static void	setup_child_io_and_signals(int in_fd, int out_fd)
 	}
 }
 
-static void	run_external_command(char **args, t_env *env)
-{
-	char	*path;
-	char	**envp;
-
-	path = find_command_path(args[0]);
-	if (!path)
-	{
-		ft_putstr_fd("minishell: command not found: ", 2);
-		ft_putendl_fd(args[0], 2);
-		exit(127);
-	}
-	envp = env_to_array(env);
-	execve(path, args, envp);
-	perror("execve");
-	free(path);
-	ft_free_matrix(envp);
-	exit(126);
-}
-
 static void	exec_child(t_command *cmd, t_env **env, int in_fd, int pipefd[2])
 {
 	int	builtin_exit_code;
@@ -58,6 +38,8 @@ static void	exec_child(t_command *cmd, t_env **env, int in_fd, int pipefd[2])
 	else
 		out_fd = STDOUT_FILENO;
 	setup_child_io_and_signals(in_fd, out_fd);
+	if (cmd->next)
+		close(pipefd[0]);
 	if (apply_redirects(cmd->redirects))
 		exit(1);
 	if (is_builtin(cmd->args[0]))
@@ -68,50 +50,70 @@ static void	exec_child(t_command *cmd, t_env **env, int in_fd, int pipefd[2])
 	run_external_command(cmd->args, *env);
 }
 
-static void	wait_and_manage_fds(pid_t pid, int *status, t_pipe_data *pipe_data,
-		int has_next)
+static pid_t	fork_pipeline_loop(t_command *cmds, t_env **env, int *in_fd)
 {
-	waitpid(pid, status, 0);
-	if (WIFSIGNALED(*status))
+	pid_t	pid;
+	int		pipefd[2];
+
+	pid = -1;
+	while (cmds)
 	{
-		if (WTERMSIG(*status) == SIGINT)
+		if (cmds->next && pipe(pipefd) == -1)
+			return (perror("pipe"), -1);
+		pid = fork();
+		if (pid == -1)
+			return (perror("fork"), -1);
+		else if (pid == 0)
+			exec_child(cmds, env, *in_fd, pipefd);
+		if (*in_fd != STDIN_FILENO)
+			close(*in_fd);
+		if (cmds->next)
+		{
+			close(pipefd[1]);
+			*in_fd = pipefd[0];
+		}
+		cmds = cmds->next;
+	}
+	return (pid);
+}
+
+static int	wait_for_pipeline(pid_t last_pid)
+{
+	int		status;
+	int		exit_code;
+	pid_t	wait_pid;
+
+	wait_pid = 0;
+	status = 0;
+	exit_code = 0;
+	while (wait_pid != -1)
+	{
+		wait_pid = waitpid(-1, &status, 0);
+		if (wait_pid <= 0)
+			continue ;
+		if (wait_pid == last_pid)
+			exit_code = get_pipeline_exit_status(status);
+		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGPIPE)
+			ft_putendl_fd(" Broken pipe", 2);
+		else if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
 			ft_putstr_fd("\n", 2);
-		else if (WTERMSIG(*status) == SIGQUIT)
+		else if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
 			ft_putendl_fd("Quit (core dumped)", 2);
 	}
-	if (*(pipe_data->in_fd) != STDIN_FILENO)
-		close(*(pipe_data->in_fd));
-	if (has_next)
-	{
-		close(pipe_data->pipefd[1]);
-		*(pipe_data->in_fd) = pipe_data->pipefd[0];
-	}
+	setup_signals();
+	return (exit_code);
 }
 
 int	exec_pipeline(t_command *cmds, t_env **env)
 {
-	t_pipe_data	pipe_data;
-	int			in_fd;
-	pid_t		pid;
-	int			status;
+	int		in_fd;
+	pid_t	last_pid;
 
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	in_fd = STDIN_FILENO;
-	pipe_data.in_fd = &in_fd;
-	status = 0;
-	while (cmds)
-	{
-		if (cmds->next && pipe(pipe_data.pipefd) == -1)
-			return (perror("pipe"), 1);
-		pid = fork();
-		if (pid == -1)
-			return (perror("fork"), 1);
-		else if (pid == 0)
-			exec_child(cmds, env, in_fd, pipe_data.pipefd);
-		wait_and_manage_fds(pid, &status, &pipe_data, (cmds->next != NULL));
-		cmds = cmds->next;
-	}
-	setup_signals();
-	return (get_pipeline_exit_status(status));
+	last_pid = fork_pipeline_loop(cmds, env, &in_fd);
+	if (last_pid == -1)
+		return (1);
+	return (wait_for_pipeline(last_pid));
 }

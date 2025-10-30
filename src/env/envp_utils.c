@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/23 14:07:47 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/27 18:08:01 by vinpache         ###   ########.fr       */
+/*   Created: 2025/10/30 13:58:50 by vinpache          #+#    #+#             */
+/*   Updated: 2025/10/30 13:59:02 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ t_env	*new_env(char *name, char *value)
 	env = malloc(sizeof(t_env));
 	if (!env)
 		return (NULL);
-	env->name = name;     // futuramente: ft_strdup(name)
-	env->value = value;   // futuramente: ft_strdup(value)
+	env->name = name;
+	env->value = value;
 	env->next = NULL;
 	return (env);
 }

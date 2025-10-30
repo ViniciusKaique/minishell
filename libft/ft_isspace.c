@@ -6,13 +6,13 @@
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 15:27:28 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/23 15:38:34 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/10/30 17:16:45 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
- #include "libft.h"
-  
- int     ft_isspace(int c)
- {
-     return ((c >= 9 && c <= 13) || c == ' ');
- }
+#include "libft.h"
+
+int	ft_isspace(int c)
+{
+	return ((c >= 9 && c <= 13) || c == ' ');
+}

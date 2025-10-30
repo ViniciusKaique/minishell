@@ -6,7 +6,7 @@
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 18:02:29 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/27 18:02:30 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/10/30 19:29:44 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	builtin_env(t_env *env)
 {
 	while (env)
 	{
-		if (env->value)
+		if (env->value && ft_strcmp(env->name, "?") != 0)
 		{
 			ft_putstr_fd(env->name, 1);
 			ft_putchar_fd('=', 1);

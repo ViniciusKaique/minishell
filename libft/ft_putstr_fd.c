@@ -6,13 +6,13 @@
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:26:41 by vinpache          #+#    #+#             */
-/*   Updated: 2025/07/24 19:41:04 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/10/30 14:45:47 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_putstr_fd(char *s, int fd)
+void	ft_putstr_fd(const char *s, int fd)
 {
 	if (!s || fd < 0)
 		return ;

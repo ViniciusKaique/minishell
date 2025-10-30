@@ -6,7 +6,7 @@
 #    By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/29 19:29:21 by vinpache          #+#    #+#              #
-#    Updated: 2025/10/29 19:47:33 by vinpache         ###   ########.fr        #
+#    Updated: 2025/10/30 20:46:26 by vinpache         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,31 +17,34 @@ INC_DIR     = include
 SRC_DIR     = src
 LIBFT_DIR   = libft
 
-SRC_FILES = main.c 							\
-			tokenization/lexer.c 			\
-			tokenization/token_utils.c 		\
-			tokenization/redirect_utils.c 	\
-			parsing/parser.c 				\
-			parsing/command_utils.c 		\
-			expansion/expansion.c 			\
-			signals/signals.c				\
-			builtins/builtin_utils.c 		\
-			builtins/cd.c 					\
-			builtins/echo.c 				\
-			builtins/env.c 					\
-			builtins/exit.c 				\
-			builtins/export.c 				\
-			builtins/pwd.c 					\
-			builtins/unset.c 				\
-			execution/execute.c 			\
-			execution/envp_utils.c 			\
-			execution/path_utils.c 			\
-			execution/free_utils.c 			\
-			execution/execute_utils.c 		\
-			execution/pipeline.c 			\
-			execution/redirect.c 			\
-			execution/heredoc.c
-
+SRC_FILES = main.c                          \
+            tokenization/lexer.c            \
+            tokenization/token_utils.c      \
+            tokenization/redirect_utils.c   \
+            parsing/parser.c                \
+            parsing/command_utils.c         \
+            expansion/expansion.c           \
+            expansion/expansion_utils.c     \
+            signals/signals.c               \
+            builtins/builtin_utils.c        \
+            builtins/cd.c                   \
+            builtins/echo.c                 \
+            builtins/exit.c                 \
+            builtins/export.c               \
+            builtins/pwd.c                  \
+            builtins/unset.c                \
+            execution/execute.c             \
+            execution/execute_checks.c      \
+            execution/path_utils.c          \
+            execution/free_utils.c          \
+            execution/execute_utils.c       \
+            execution/pipeline.c            \
+            execution/redirect.c            \
+            execution/heredoc.c             \
+            env/env.c                       \
+            env/env_utils.c                 \
+            env/envp_utils.c
+			
 SRCS = $(addprefix $(SRC_DIR)/, $(filter-out main.c, $(SRC_FILES))) ./main.c
 OBJS = $(SRCS:.c=.o)
 

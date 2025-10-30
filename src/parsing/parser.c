@@ -1,20 +1,17 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* parser.c                                           :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/10/25 17:30:00 by vinpache          #+#    #+#             */
-/* Updated: 2025/10/25 17:30:00 by vinpache         ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/30 18:36:11 by vinpache          #+#    #+#             */
+/*   Updated: 2025/10/30 18:36:23 by vinpache         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/**
- * @brief Converte um t_token_type em um t_redirect_type.
- */
 static t_redirect_type	get_redir_type(t_token_type type)
 {
 	if (type == T_REDIR_IN)
@@ -26,12 +23,6 @@ static t_redirect_type	get_redir_type(t_token_type type)
 	return (R_HEREDOC);
 }
 
-/**
- * @brief Processa um token de redirecionamento.
- * Cria um nó t_redirect, o anexa ao comando atual e avança o ponteiro
- * de token além do nome do arquivo.
- * Retorna 0 em sucesso, 1 em erro de sintaxe ou alocação.
- */
 static int	handle_redirect(t_command *cmd, t_token **tok_ptr)
 {
 	t_token			*tok;
@@ -57,66 +48,28 @@ static int	handle_redirect(t_command *cmd, t_token **tok_ptr)
 	return (0);
 }
 
-/**
- * @brief Adiciona um argumento (string) ao array cmd->args.
- * Realoca o array cmd->args para acomodar a nova string.
- * Retorna 0 em sucesso, 1 em erro de alocação.
- */
-static int	add_arg_to_cmd(t_command *cmd, char *arg_val)
+static t_command	*handle_pipe(t_token **tok_ptr, t_command *current_cmd,
+		t_command **cmd_list)
 {
-	char	**new_args;
-	char	*arg_copy;
-	int		i;
+	t_token	*tok;
 
-	i = 0;
-	while (cmd->args && cmd->args[i])
-		i++;
-	new_args = ft_calloc(i + 2, sizeof(char *));
-	if (!new_args)
-		return (1);
-	i = 0;
-	while (cmd->args && cmd->args[i])
+	tok = *tok_ptr;
+	if (!tok->next || tok->next->type == T_PIPE || current_cmd->args == NULL)
 	{
-		new_args[i] = cmd->args[i];
-		i++;
+		ft_putendl_fd("minishell: syntax error near unexpected token `|'", 2);
+		return (free_commands(*cmd_list), NULL);
 	}
-	arg_copy = ft_strdup(arg_val);
-	if (!arg_copy)
-		return (free(new_args), 1);
-	new_args[i] = arg_copy;
-	if (cmd->args)
-		free(cmd->args);
-	cmd->args = new_args;
-	return (0);
+	current_cmd = create_and_append_cmd(cmd_list);
+	if (!current_cmd)
+		return (free_commands(*cmd_list), NULL);
+	*tok_ptr = tok->next;
+	return (current_cmd);
 }
 
-/**
- * @brief Cria um novo t_command e o anexa ao final da lista de comandos.
- */
-static t_command	*create_and_append_cmd(t_command **cmd_list)
+static t_command	*parse_loop(t_token *tok, t_command *cmd_list)
 {
-	t_command	*new_cmd;
-
-	new_cmd = new_command();
-	if (!new_cmd)
-		return (NULL);
-	add_command_back(cmd_list, new_cmd);
-	return (new_cmd);
-}
-
-/**
- * @brief Função principal do parser.
- * Converte a lista de tokens (do lexer) em uma lista encadeada de
- * t_command (pipeline), pronta para o executor.
- */
-t_command	*parse(t_token *tokens)
-{
-	t_command	*cmd_list;
 	t_command	*current_cmd;
-	t_token		*tok;
 
-	cmd_list = NULL;
-	tok = tokens;
 	current_cmd = create_and_append_cmd(&cmd_list);
 	if (!current_cmd)
 		return (NULL);
@@ -124,30 +77,26 @@ t_command	*parse(t_token *tokens)
 	{
 		if (tok->type == T_WORD)
 		{
-			if (add_arg_to_cmd(current_cmd, tok->value))
+			if (add_arg_to_cmd(current_cmd, tok->value, tok->has_quotes))
 				return (free_commands(cmd_list), NULL);
 			tok = tok->next;
 		}
 		else if (tok->type == T_PIPE)
 		{
-			/*
-			 * VERIFICAÇÃO DE ERRO DE SINTAXE OBRIGATÓRIA:
-			 * 1. Se o pipe for o último token.
-			 * 2. Se o próximo token também for um pipe (ex: "||").
-			 * 3. Se for o primeiro token (ex: "| ls").
-			 */
-			if (!tok->next || tok->next->type == T_PIPE || current_cmd->args == NULL)
-			{
-				ft_putendl_fd("minishell: syntax error near unexpected token `|'", 2);
-				return (free_commands(cmd_list), NULL);
-			}
-			current_cmd = create_and_append_cmd(&cmd_list);
+			current_cmd = handle_pipe(&tok, current_cmd, &cmd_list);
 			if (!current_cmd)
-				return (free_commands(cmd_list), NULL);
-			tok = tok->next;
+				return (NULL);
 		}
 		else if (handle_redirect(current_cmd, &tok))
 			return (free_commands(cmd_list), NULL);
 	}
 	return (cmd_list);
+}
+
+t_command	*parse(t_token *tokens)
+{
+	t_command	*cmd_list;
+
+	cmd_list = NULL;
+	return (parse_loop(tokens, cmd_list));
 }

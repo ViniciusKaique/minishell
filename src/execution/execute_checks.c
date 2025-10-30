@@ -1,38 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   execute_checks.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/28 00:00:00 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/30 15:30:36 by vinpache         ###   ########.fr       */
+/*   Created: 2025/10/30 20:44:52 by vinpache          #+#    #+#             */
+/*   Updated: 2025/10/30 20:49:08 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-volatile sig_atomic_t	g_signal_received = 0;
-
-void	handle_sigint_prompt(int sig)
+void	handle_path_pre_exec_errors(char *path, char **args)
 {
-	(void)sig;
-	g_signal_received = 130;
-	write(1, "\n", 1);
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
-}
+	struct stat	path_stat;
 
-void	handle_sigint_heredoc(int sig)
-{
-	(void)sig;
-	g_signal_received = 130;
-	close(STDIN_FILENO);
-}
-
-void	setup_signals(void)
-{
-	signal(SIGINT, handle_sigint_prompt);
-	signal(SIGQUIT, SIG_IGN);
+	if (stat(path, &path_stat) == 0)
+	{
+		if (S_ISDIR(path_stat.st_mode))
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(path, 2);
+			ft_putendl_fd(": Is a directory", 2);
+			free(path);
+			exit(126);
+		}
+		if (access(path, X_OK) != 0)
+		{
+			perror(args[0]);
+			free(path);
+			exit(126);
+		}
+	}
 }

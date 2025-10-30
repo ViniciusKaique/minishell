@@ -5,26 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/29 18:36:33 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/29 19:02:14 by vinpache         ###   ########.fr       */
+/*   Created: 2025/10/30 20:47:17 by vinpache          #+#    #+#             */
+/*   Updated: 2025/10/30 20:47:23 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	save_stdio(int *stdin_backup, int *stdout_backup)
-{
-	*stdin_backup = dup(STDIN_FILENO);
-	*stdout_backup = dup(STDOUT_FILENO);
-}
-
-void	restore_stdio(int stdin_backup, int stdout_backup)
-{
-	dup2(stdin_backup, STDIN_FILENO);
-	dup2(stdout_backup, STDOUT_FILENO);
-	close(stdin_backup);
-	close(stdout_backup);
-}
 
 static int	count_env_vars(t_env *env)
 {
@@ -73,4 +59,46 @@ char	**env_to_array(t_env *env)
 	}
 	array[i] = NULL;
 	return (array);
+}
+
+static char	*get_command_path(char **args)
+{
+	char	*path;
+
+	if (!args || !args[0] || !*(args[0]))
+	{
+		ft_putendl_fd("minishell: : command not found", 2);
+		exit(127);
+	}
+	if (ft_strchr(args[0], '/'))
+		path = ft_strdup(args[0]);
+	else
+		path = find_command_path(args[0]);
+	if (!path)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(args[0], 2);
+		ft_putendl_fd(": command not found", 2);
+		exit(127);
+	}
+	return (path);
+}
+
+void	run_external_command(char **args, t_env *env)
+{
+	char	*path;
+	char	**envp;
+
+	path = get_command_path(args);
+	handle_path_pre_exec_errors(path, args);
+	envp = env_to_array(env);
+	signal(SIGPIPE, SIG_DFL);
+	execve(path, args, envp);
+	perror(args[0]);
+	if (errno == EACCES)
+		exit(126);
+	else
+		exit(127);
+	free(path);
+	ft_free_matrix(envp);
 }
