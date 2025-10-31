@@ -6,7 +6,7 @@
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 15:12:06 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/30 20:48:50 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/10/31 17:10:31 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,8 @@ void							handle_path_pre_exec_errors(char *path,
 
 /* Módulo de Sinais e Memória */
 extern volatile sig_atomic_t	g_signal_received;
+void							setup_child_io_and_signals(int in_fd,
+									int out_fd);
 void							handle_sigint_prompt(int sig);
 void							handle_sigint_heredoc(int sig);
 void							setup_signals(void);

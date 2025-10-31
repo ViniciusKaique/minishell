@@ -6,7 +6,7 @@
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 00:00:00 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/30 15:30:36 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/10/31 17:11:21 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,4 +35,20 @@ void	setup_signals(void)
 {
 	signal(SIGINT, handle_sigint_prompt);
 	signal(SIGQUIT, SIG_IGN);
+}
+
+void	setup_child_io_and_signals(int in_fd, int out_fd)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	if (in_fd != STDIN_FILENO)
+	{
+		dup2(in_fd, STDIN_FILENO);
+		close(in_fd);
+	}
+	if (out_fd != STDOUT_FILENO)
+	{
+		dup2(out_fd, STDOUT_FILENO);
+		close(out_fd);
+	}
 }

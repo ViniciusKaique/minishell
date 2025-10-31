@@ -6,26 +6,30 @@
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 19:47:14 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/30 20:39:52 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/10/31 17:14:42 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	setup_child_io_and_signals(int in_fd, int out_fd)
+static int	process_wait_status(int status, pid_t wait_pid, pid_t last_pid,
+		int *sigpipe_occurred)
 {
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-	if (in_fd != STDIN_FILENO)
+	int	new_exit_code;
+
+	new_exit_code = -1;
+	if (wait_pid == last_pid)
+		new_exit_code = get_pipeline_exit_status(status);
+	if (WIFSIGNALED(status))
 	{
-		dup2(in_fd, STDIN_FILENO);
-		close(in_fd);
+		if (WTERMSIG(status) == SIGPIPE)
+			*sigpipe_occurred = 1;
+		else if (WTERMSIG(status) == SIGINT)
+			ft_putstr_fd("\n", 2);
+		else if (WTERMSIG(status) == SIGQUIT)
+			ft_putendl_fd("Quit (core dumped)", 2);
 	}
-	if (out_fd != STDOUT_FILENO)
-	{
-		dup2(out_fd, STDOUT_FILENO);
-		close(out_fd);
-	}
+	return (new_exit_code);
 }
 
 static void	exec_child(t_command *cmd, t_env **env, int in_fd, int pipefd[2])
@@ -82,24 +86,24 @@ static int	wait_for_pipeline(pid_t last_pid)
 	int		status;
 	int		exit_code;
 	pid_t	wait_pid;
+	int		sigpipe_occurred;
+	int		res;
 
-	wait_pid = 0;
-	status = 0;
 	exit_code = 0;
-	while (wait_pid != -1)
+	sigpipe_occurred = 0;
+	wait_pid = waitpid(-1, &status, 0);
+	while (wait_pid > 0)
 	{
+		{
+			res = process_wait_status(status, wait_pid, last_pid,
+					&sigpipe_occurred);
+			if (res != -1)
+				exit_code = res;
+		}
 		wait_pid = waitpid(-1, &status, 0);
-		if (wait_pid <= 0)
-			continue ;
-		if (wait_pid == last_pid)
-			exit_code = get_pipeline_exit_status(status);
-		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGPIPE)
-			ft_putendl_fd(" Broken pipe", 2);
-		else if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-			ft_putstr_fd("\n", 2);
-		else if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
-			ft_putendl_fd("Quit (core dumped)", 2);
 	}
+	if (sigpipe_occurred)
+		ft_putendl_fd(" Broken pipe", 2);
 	setup_signals();
 	return (exit_code);
 }
