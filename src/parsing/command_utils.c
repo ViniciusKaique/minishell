@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kbrito-g <kbrito-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 18:34:03 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/30 18:34:19 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/11/05 16:27:46 by kbrito-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,6 @@ int	add_arg_to_cmd(t_command *cmd, char *arg_val, int has_quotes)
 	return (0);
 }
 
-/* 5ª Função (Pública) - Sem alterações */
 t_command	*create_and_append_cmd(t_command **cmd_list)
 {
 	t_command	*new_cmd;

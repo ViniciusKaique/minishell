@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+         #
+#    By: kbrito-g <kbrito-g@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/29 19:29:21 by vinpache          #+#    #+#              #
-#    Updated: 2025/10/30 20:46:26 by vinpache         ###   ########.fr        #
+#    Updated: 2025/11/05 16:30:02 by kbrito-g         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,7 +44,7 @@ SRC_FILES = main.c                          \
             env/env.c                       \
             env/env_utils.c                 \
             env/envp_utils.c
-			
+
 SRCS = $(addprefix $(SRC_DIR)/, $(filter-out main.c, $(SRC_FILES))) ./main.c
 OBJS = $(SRCS:.c=.o)
 

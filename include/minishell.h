@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kbrito-g <kbrito-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 15:12:06 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/31 17:10:31 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/11/05 16:29:09 by kbrito-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,8 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
-/* --- DEFINES --- */
 # define HEREDOC_TMP_FILE "/tmp/.minishell_heredoc"
 
-/* --- ENUMS --- */
 typedef enum e_token_type
 {
 	T_WORD,
@@ -47,7 +45,6 @@ typedef enum e_redirect_type
 	R_HEREDOC
 }								t_redirect_type;
 
-/* --- STRUCTS --- */
 typedef struct s_env
 {
 	char						*name;
@@ -84,9 +81,7 @@ typedef struct s_pipe_data
 	int							*in_fd;
 }								t_pipe_data;
 
-/* --- PROTÓTIPOS --- */
 
-/* Módulo de Parsing e Tokenização */
 t_command						*parse(t_token *tokens);
 t_command						*new_command(void);
 void							add_command_back(t_command **list,
@@ -104,7 +99,6 @@ t_redirect						*new_redirect(t_redirect_type type, char *file);
 void							add_redirect_back(t_redirect **list,
 									t_redirect *new);
 
-/* Módulo de Expansão */
 void							expand_commands(t_command *cmds, t_env *env);
 int								handle_variable(char *str, int i,
 									char **new_str, t_env *env);
@@ -115,7 +109,6 @@ void							expand_redirects(t_command *cmd, t_env *env);
 char							*expand_and_remove_quotes(char *str,
 									t_env *env);
 
-/* Módulo de Ambiente (ENV) */
 t_env							*new_env(char *name, char *value);
 void							add_env_back(t_env **list, t_env *new);
 t_env							*init_env(char **envp);
@@ -125,7 +118,6 @@ int								set_env_kv(t_env **env, const char *name,
 char							*get_env_val(t_env *env, const char *name);
 int								builtin_env(t_env *env);
 
-/* Módulo de Built-ins */
 int								builtin_echo(char **args);
 int								builtin_cd(char **args, t_env **env);
 int								builtin_pwd(void);
@@ -136,7 +128,6 @@ int								is_builtin(char *cmd);
 int								exec_builtin(char **args, t_env **env);
 int								is_valid_name(const char *s);
 
-/* Módulo de Execução */
 int								execute_commands(t_command *cmds, t_env **env);
 int								exec_pipeline(t_command *cmds, t_env **env);
 int								apply_redirects(t_redirect *redir);
@@ -150,7 +141,6 @@ int								get_pipeline_exit_status(int status);
 void							handle_path_pre_exec_errors(char *path,
 									char **args);
 
-/* Módulo de Sinais e Memória */
 extern volatile sig_atomic_t	g_signal_received;
 void							setup_child_io_and_signals(int in_fd,
 									int out_fd);
