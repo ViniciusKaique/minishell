@@ -6,7 +6,7 @@
 /*   By: kbrito-g <kbrito-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 15:12:06 by vinpache          #+#    #+#             */
-/*   Updated: 2025/11/05 16:29:09 by kbrito-g         ###   ########.fr       */
+/*   Updated: 2025/11/05 21:27:31 by kbrito-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ typedef struct s_pipe_data
 	int							pipefd[2];
 	int							*in_fd;
 }								t_pipe_data;
-
 
 t_command						*parse(t_token *tokens);
 t_command						*new_command(void);
