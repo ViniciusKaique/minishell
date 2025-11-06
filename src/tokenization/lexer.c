@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kbrito-g <kbrito-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/30 18:28:11 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/30 18:28:58 by vinpache         ###   ########.fr       */
+/*   Updated: 2025/11/06 19:31:51 by kbrito-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,11 @@ static int	handle_quoted_part(char *s, int i, char **full_word,
 	i++;
 	while (s[i] && s[i] != quote)
 		i++;
+	if (s[i] == '\0')
+	{
+		ft_putendl_fd("minishell: syntax error: unclosed quote", 2);
+		return (-1);
+	}
 	if (s[i] == quote)
 		i++;
 	word_part = ft_substr(s, start, i - start);
@@ -73,7 +78,14 @@ static int	read_complex_word(char *s, int i, t_token **lst)
 	while (s[i] && !ft_isspace(s[i]) && !ft_strchr("|<>", s[i]))
 	{
 		if (s[i] == '"' || s[i] == '\'')
+		{
 			i = handle_quoted_part(s, i, &full_word, &has_quotes);
+			if (i == -1)
+			{
+				free(full_word);
+				return (-1);
+			}
+		}
 		else
 			i = handle_unquoted_part(s, i, &full_word);
 	}
@@ -95,7 +107,14 @@ t_token	*tokenize(char *line)
 		else if (ft_strchr("|<>", line[i]))
 			i = read_symbol(line, i, &tokens);
 		else
+		{
 			i = read_complex_word(line, i, &tokens);
+			if (i == -1)
+			{
+				free_tokens(tokens);
+				return (NULL);
+			}
+		}
 	}
 	return (tokens);
 }
