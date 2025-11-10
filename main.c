@@ -5,12 +5,52 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/30 17:14:06 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/30 17:14:20 by vinpache         ###   ########.fr       */
+/*   Created: 2025/11/09 21:56:19 by vinpache          #+#    #+#             */
+/*   Updated: 2025/11/09 21:56:59 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	handle_input(char *input, t_env **env);
+
+static void	update_status_from_signal(t_env **env)
+{
+	char	*status_str;
+
+	if (g_signal_received != 0)
+	{
+		status_str = ft_itoa(g_signal_received);
+		if (status_str)
+		{
+			set_env_kv(env, "?", status_str);
+			free(status_str);
+		}
+		g_signal_received = 0;
+	}
+}
+
+static void	prompt_loop(t_env **env)
+{
+	char	*input;
+
+	while (1)
+	{
+		setup_signals();
+		update_status_from_signal(env);
+		input = readline("minishell$ ");
+		if (!input)
+		{
+			ft_putendl_fd("exit", 1);
+			break ;
+		}
+		signal(SIGINT, SIG_IGN);
+		signal(SIGQUIT, SIG_IGN);
+		if (*input)
+			handle_input(input, env);
+		free(input);
+	}
+}
 
 static void	handle_input(char *input, t_env **env)
 {
@@ -35,35 +75,6 @@ static void	handle_input(char *input, t_env **env)
 		free_commands(commands);
 	}
 	free_tokens(tokens);
-}
-
-static void	prompt_loop(t_env **env)
-{
-	char	*input;
-	char	*status_str;
-
-	while (1)
-	{
-		if (g_signal_received != 0)
-		{
-			status_str = ft_itoa(g_signal_received);
-			if (status_str)
-			{
-				set_env_kv(env, "?", status_str);
-				free(status_str);
-			}
-			g_signal_received = 0;
-		}
-		input = readline("minishell$ ");
-		if (!input)
-		{
-			ft_putendl_fd("exit", 1);
-			break ;
-		}
-		if (*input)
-			handle_input(input, env);
-		free(input);
-	}
 }
 
 int	main(int argc, char **argv, char **envp)

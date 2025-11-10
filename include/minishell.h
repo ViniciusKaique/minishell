@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kbrito-g <kbrito-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/30 15:12:06 by vinpache          #+#    #+#             */
-/*   Updated: 2025/11/06 20:17:16 by kbrito-g         ###   ########.fr       */
+/*   Created: 2025/11/09 21:26:29 by vinpache          #+#    #+#             */
+/*   Updated: 2025/11/09 21:26:31 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <sys/ioctl.h>
 
 # define HEREDOC_TMP_FILE "/tmp/.minishell_heredoc"
 
@@ -144,7 +145,6 @@ extern volatile sig_atomic_t	g_signal_received;
 void							setup_child_io_and_signals(int in_fd,
 									int out_fd);
 void							handle_sigint_prompt(int sig);
-void							handle_sigint_heredoc(int sig);
 void							setup_signals(void);
 void							free_redirects(t_redirect *redir);
 void							free_tokens(t_token *tok);

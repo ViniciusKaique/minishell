@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/30 19:47:14 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/31 17:14:42 by vinpache         ###   ########.fr       */
+/*   Created: 2025/11/09 21:49:27 by vinpache          #+#    #+#             */
+/*   Updated: 2025/11/09 21:50:31 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,11 @@ static void	exec_child(t_command *cmd, t_env **env, int in_fd, int pipefd[2])
 	if (cmd->next)
 		close(pipefd[0]);
 	if (apply_redirects(cmd->redirects))
+	{
+		if (g_signal_received == 130)
+			exit(130);
 		exit(1);
+	}
 	if (is_builtin(cmd->args[0]))
 	{
 		builtin_exit_code = exec_builtin(cmd->args, env);
@@ -104,7 +108,6 @@ static int	wait_for_pipeline(pid_t last_pid)
 	}
 	if (sigpipe_occurred)
 		ft_putendl_fd(" Broken pipe", 2);
-	setup_signals();
 	return (exit_code);
 }
 
@@ -113,8 +116,6 @@ int	exec_pipeline(t_command *cmds, t_env **env)
 	int		in_fd;
 	pid_t	last_pid;
 
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
 	in_fd = STDIN_FILENO;
 	last_pid = fork_pipeline_loop(cmds, env, &in_fd);
 	if (last_pid == -1)

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/28 00:00:00 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/31 17:11:21 by vinpache         ###   ########.fr       */
+/*   Created: 2025/11/09 21:48:40 by vinpache          #+#    #+#             */
+/*   Updated: 2025/11/09 21:49:00 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,9 @@ void	handle_sigint_prompt(int sig)
 {
 	(void)sig;
 	g_signal_received = 130;
-	write(1, "\n", 1);
+	ioctl(STDIN_FILENO, TIOCSTI, "\n");
 	rl_replace_line("", 0);
 	rl_on_new_line();
-	rl_redisplay();
-}
-
-void	handle_sigint_heredoc(int sig)
-{
-	(void)sig;
-	g_signal_received = 130;
-	close(STDIN_FILENO);
 }
 
 void	setup_signals(void)

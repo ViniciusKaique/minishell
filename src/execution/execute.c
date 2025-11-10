@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vinpache <vinpache@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/30 20:07:44 by vinpache          #+#    #+#             */
-/*   Updated: 2025/10/30 20:07:49 by vinpache         ###   ########.fr       */
+/*   Created: 2025/11/09 21:26:45 by vinpache          #+#    #+#             */
+/*   Updated: 2025/11/09 21:49:17 by vinpache         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,12 @@ static int	exec_single_builtin(t_command *cmds, t_env **env)
 
 	save_stdio(&stdin_backup, &stdout_backup);
 	if (apply_redirects(cmds->redirects))
-		exit_code = 1;
+	{
+		if (g_signal_received == 130)
+			exit_code = 130;
+		else
+			exit_code = 1;
+	}
 	else if (cmds->args && cmds->args[0])
 		exit_code = exec_builtin(cmds->args, env);
 	else
